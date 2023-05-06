@@ -1,25 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import axios from 'axios';
 import MaskInput from 'react-native-mask-input';
 
-export default function App() {
-    const [infoCep, setInfoCep]     = useState({});
+
+export default function Home() {
     const [searchCep, setSearchCep] = useState('');
+    const navigation = useNavigation();
     
     const getCep = async () => {
-        const {data} = await axios.get(`https://viacep.com.br/ws/${searchCep}/json`)
-        console.log(data);
-        setInfoCep(data);
+        if(searchCep.length == 0) {
+            Alert.alert('Informe o CEP');
+        }else{
+            const {data} = await axios.get(`https://viacep.com.br/ws/${searchCep}/json`)
+            navigation.navigate('Detalhes', 
+                                 {'cep' : data.cep, 
+                                  'localidade': data.localidade, 
+                                  'bairro': data.bairro, 
+                                  'logradouro': data.logradouro,
+                                  'uf': data.uf,
+                                  'complemento': data.complemento, 
+                                  'ddd': data.ddd,
+                                  'ibge': data.ibge,
+                                  'siafi': data.siafi
+                                 });
+        }
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <View>
                 <MaskInput
-                    // mask={['00.000-00']}
                     mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/,'-',/\d/, /\d/, /\d/]}
                     placeholder='Digite seu Cep'
                     keyboardType='numeric'

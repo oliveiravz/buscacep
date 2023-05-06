@@ -1,16 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Entypo, Feather, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
-import Home from '../buscacep/src/components/home/';
-import Favoritos from '../buscacep/src/components/favoritos/';
-import Historico from '../buscacep/src/components/historico/';
+import Home      from '../buscacep/src/pages/home/';
+import Favoritos from '../buscacep/src/pages/favoritos/';
+import Historico from '../buscacep/src/pages/historico/';
+import Detalhes  from '../buscacep/src/pages/detalhes/';
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab   = createBottomTabNavigator();
 
 function Tabs() {
     return(
@@ -70,6 +70,11 @@ export default function App() {
                     options={{title:'', headerTransparent: true, headerShown: false}}
                     name='Historico' 
                     component={Historico}
+                 />
+                 <Stack.Screen 
+                    options={{title:'', headerTransparent: true, headerShown: false}}
+                    name='Detalhes' 
+                    component={Detalhes}
                  />
             </Stack.Navigator>
         </NavigationContainer>
