@@ -9,6 +9,7 @@ export default function Detalhes({route}) {
             Detalhes sobre o CEP: {route.params?.cep}{'\n'}
             Rua: {route.params?.logradouro}{'\n'}
             Bairro: {route.params?.bairro}{'\n'}
+            Cidade: {route.params?.localidade}{'\n'}
             Complemento: {route.params?.complemento}{'\n'}
             Estado: {route.params?.uf}{'\n'}
             DDD: {route.params?.ddd}{'\n'}

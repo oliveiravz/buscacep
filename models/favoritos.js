@@ -1,9 +1,8 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class favoritos extends Model {
+import { Model } from 'sequelize';
+
+export default (sequelize, DataTypes) => {
+  class Favoritos extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  favoritos.init({
+  Favoritos.init({
     cep: DataTypes.STRING,
     localidade: DataTypes.STRING,
     logradouro: DataTypes.STRING,
@@ -22,5 +21,5 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'favoritos',
   });
-  return favoritos;
+  return Favoritos;
 };

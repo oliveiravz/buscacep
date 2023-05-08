@@ -1,9 +1,8 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class historico extends Model {
+import { Model } from 'sequelize';
+
+export default (sequelize, DataTypes) => {
+  class Historico extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  historico.init({
+  Historico.init({
     cep: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'historico',
   });
-  return historico;
+  return Historico;
 };
