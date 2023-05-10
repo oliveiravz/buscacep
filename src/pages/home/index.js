@@ -5,16 +5,34 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import MaskInput from 'react-native-mask-input';
 
+import firebase from '../../firebaseconnection';
 
 export default function Home() {
     const [searchCep, setSearchCep] = useState('');
     const navigation = useNavigation();
+    const database = firebase.firestore()
+
+    function saveData(data){
+        database.collection("dados").add({
+            cep: data.cep,
+            localidade: data.localidade,
+            bairro: data.bairro,
+            logradouro: data.logradouro,
+            uf: data.uf,
+            complemento: data.complemento,
+            ddd: data.ddd,
+            ibge: data.ibge,
+            siafi: data.siafi,
+            data_hora: firebase.firestore.FieldValue.serverTimestamp()
+        })
+    }
     
     const getCep = async () => {
         if(searchCep.length == 0) {
             Alert.alert('Informe o CEP');
         }else{
             const {data} = await axios.get(`https://viacep.com.br/ws/${searchCep}/json`)
+            saveData(data)
             navigation.navigate('Detalhes', 
                                  {'cep' : data.cep, 
                                   'localidade': data.localidade, 
