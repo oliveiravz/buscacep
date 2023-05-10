@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+
 import axios from 'axios';
 import MaskInput from 'react-native-mask-input';
 
@@ -50,18 +51,23 @@ export default function Home() {
     return (
         <SafeAreaView style={styles.container}>
             <View>
+                 <Text style={styles.title}>BUSCA CEP</Text>
+            </View>
+            <View>
                 <MaskInput
                     mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/,'-',/\d/, /\d/, /\d/]}
+                    style={styles.input}
                     placeholder='Digite seu Cep'
                     keyboardType='numeric'
                     value={searchCep}
                     onChangeText={(masked, unmasked) => setSearchCep(unmasked)}
                     onSubmitEditing={getCep}
                 />
-                <TouchableOpacity onPress={getCep}>
-                    <Text>Buscar</Text>
-                </TouchableOpacity>
             </View>
+            <View><TouchableOpacity onPress={getCep}>
+                    <Text style={styles.busca}>Buscar</Text>
+                </TouchableOpacity>
+                </View>
         </SafeAreaView>
     );
 }
@@ -69,8 +75,33 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',
+    
+  },
+  input: {
+    marginTop: 100,
+    borderWidth: 1,
+    backgroundColor: '#FFFF',
+    paddingHorizontal: 60,
+    paddingVertical: 15,
+    borderRadius: 8,
+  },
+  title: {
+    marginTop: 250,
+    textAlign: 'center',
+    fontSize: 40,
+    fontWeight: "bold",
+},
+  busca:{
+    marginTop: 35,
+    borderWidth: 1,
+    backgroundColor: '#FFFF',
+    textAlign: 'center',
+    paddingHorizontal: 60,
+    paddingVertical: 15,
+    fontWeight: "bold",
+    borderRadius: 8,
   },
 });
