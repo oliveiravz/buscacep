@@ -14,7 +14,14 @@ const Tab   = createBottomTabNavigator();
 
 function Tabs() {
     return(
-        <Tab.Navigator>
+        <Tab.Navigator tabBarOptions={{
+            tabStyle: { 
+                backgroundColor: '#1e212d',
+            },
+            activeTintColor: '#fff',
+            style: { borderTopWidth: 0 }
+          }}
+          >
             <Tab.Screen 
                 options={{
                             headerTransparent: true, 

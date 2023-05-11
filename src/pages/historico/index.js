@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 
-import firebase from '../../firebaseconnection';
+import firebase from '../../firebaseConnection';
 
 export default function Historico() {
   const [history, setHistory] = useState([])
@@ -28,15 +28,15 @@ export default function Historico() {
             <View>
               <Text>{item.cep}</Text>
               <Text>{item.localidade}</Text>
-              <Text>{data.cep}</Text>  
-              <Text>{data.localidade}</Text>
-              <Text>{data.bairro}</Text>
-              <Text>{data.logradouro}</Text>
-              <Text>{data.uf}</Text>
-              <Text>{data.complemento}</Text>
-              <Text>{data.ddd}</Text>
-              <Text>{data.ibge}</Text>
-              <Text>{data.siafi}</Text>
+              <Text>{item.cep}</Text>  
+              <Text>{item.localidade}</Text>
+              <Text>{item.bairro}</Text>
+              <Text>{item.logradouro}</Text>
+              <Text>{item.uf}</Text>
+              <Text>{item.complemento}</Text>
+              <Text>{item.ddd}</Text>
+              <Text>{item.ibge}</Text>
+              <Text>{item.siafi}</Text>
             
             </View>
           )

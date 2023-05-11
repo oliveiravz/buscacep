@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-
-import axios from 'axios';
 import MaskInput from 'react-native-mask-input';
+import { FontAwesome } from '@expo/vector-icons';
 
-import firebase from '../../firebaseconnection';
+import firebase from '../../firebaseConnection';
+import api from '../../services/api';
 
 export default function Home() {
     const [searchCep, setSearchCep] = useState('');
     const navigation = useNavigation();
-    const database = firebase.firestore()
+    const database = firebase.firestore();
 
     function saveData(data){
         database.collection("dados").add({
@@ -25,15 +24,15 @@ export default function Home() {
             ibge: data.ibge,
             siafi: data.siafi,
             data_hora: firebase.firestore.FieldValue.serverTimestamp()
-        })
+        });
     }
     
     const getCep = async () => {
         if(searchCep.length == 0) {
             Alert.alert('Informe o CEP');
         }else{
-            const {data} = await axios.get(`https://viacep.com.br/ws/${searchCep}/json`)
-            saveData(data)
+            const {data} = await api.get(`/${searchCep}/json`);
+            saveData(data);
             navigation.navigate('Detalhes', 
                                  {'cep' : data.cep, 
                                   'localidade': data.localidade, 
@@ -50,14 +49,15 @@ export default function Home() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View>
-                 <Text style={styles.title}>BUSCA CEP</Text>
+            <View style={styles.title}>
+                <FontAwesome name='map-marker' size='275px' color='#000000' />
+                <Text style={styles.title}>BUSCACEP</Text>
             </View>
             <View>
                 <MaskInput
                     mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/,'-',/\d/, /\d/, /\d/]}
                     style={styles.input}
-                    placeholder='Digite seu Cep'
+                    placeholder='Digite seu CEP'
                     keyboardType='numeric'
                     value={searchCep}
                     onChangeText={(masked, unmasked) => setSearchCep(unmasked)}
@@ -65,7 +65,7 @@ export default function Home() {
                 />
             </View>
             <View><TouchableOpacity onPress={getCep}>
-                    <Text style={styles.busca}>Buscar</Text>
+                    <Text style={styles.busca}>BUSCAR</Text>
                 </TouchableOpacity>
                 </View>
         </SafeAreaView>
@@ -78,30 +78,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   input: {
-    marginTop: 100,
-    borderWidth: 1,
+    marginTop: 25,
     backgroundColor: '#FFFF',
-    paddingHorizontal: 60,
+    padding: 15,
     paddingVertical: 15,
     borderRadius: 8,
+    fontSize: 20,
+    margin: 10
   },
   title: {
-    marginTop: 250,
     textAlign: 'center',
     fontSize: 40,
-    fontWeight: "bold",
+    fontWeight: "bolder",
+    fontStyle: 'italic',
 },
   busca:{
     marginTop: 35,
     borderWidth: 1,
-    backgroundColor: '#FFFF',
+    backgroundColor: '#000000',
     textAlign: 'center',
     paddingHorizontal: 60,
     paddingVertical: 15,
     fontWeight: "bold",
     borderRadius: 8,
+    color: '#ffff'
   },
 });
