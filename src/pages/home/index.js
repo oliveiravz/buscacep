@@ -11,9 +11,12 @@ export default function Home() {
     const [searchCep, setSearchCep] = useState('');
     const navigation = useNavigation();
     const database = firebase.firestore();
+    const [count, setCount] = useState(0);
 
     function saveData(data){
         database.collection("dados").add({
+            id: count,
+            favoritos: false,
             cep: data.cep,
             localidade: data.localidade,
             bairro: data.bairro,
@@ -25,6 +28,8 @@ export default function Home() {
             siafi: data.siafi,
             data_hora: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        setCount(count + 1);
     }
     
     const getCep = async () => {
