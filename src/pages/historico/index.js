@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Card } from 'react-native-paper';
 
 import firebase from '../../firebaseConnection';
+
 
 export default function Historico() {
   const [history, setHistory] = useState([])
@@ -20,13 +22,33 @@ export default function Historico() {
 
   return (
     <View style={styles.container}>
-      <Text>Histórico!</Text>
+      <Text style={styles.title_cabecalho}>
+        Histórico de Pesquisa
+
+        <TouchableOpacity style={styles.button}>
+          <Text >Limpar Historico</Text>
+        </TouchableOpacity>
+      
+      </Text>
+      
       <FlatList
         data={history}
         renderItem={({ item }) => {
           return(
-            <View>
-              <Text>{item.cep}</Text>
+            <SafeAreaView>
+                <Card>
+                    <Text style={styles.title}>
+                        CEP: {item.cep}{'\n'}
+                        Rua: {item.logradouro}{'\n'}
+                        Bairro: {item.bairro}{'\n'}
+                        Complemento: {item.complemento}{'\n'}
+                        Estado: {item.uf}{'\n'}
+                        DDD: {item.ddd}{'\n'}
+                        Código IBGE: {item.ibge}{'\n'}
+                    </Text>
+                </Card>
+                <Text>{'\n'}</Text>
+              {/* <Text>{item.cep}</Text>
               <Text>{item.localidade}</Text>
               <Text>{item.cep}</Text>  
               <Text>{item.localidade}</Text>
@@ -36,9 +58,9 @@ export default function Historico() {
               <Text>{item.complemento}</Text>
               <Text>{item.ddd}</Text>
               <Text>{item.ibge}</Text>
-              <Text>{item.siafi}</Text>
+              <Text>{item.siafi}</Text> */}
             
-            </View>
+            </SafeAreaView>
           )
         }}
       />
@@ -51,27 +73,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FF8C00',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: '5%',
+    // justifyContent: 'center'
   },
   title: {
-    marginTop: 10,
+    padding: '5%'
+  },
+  title_cabecalho: {
+    // alignItems: 'center',
+    padding: '5%',
+    // justifyContent: 'center',
+    fontWeight: 'bolder'
+  },
+  button:{
+    padding: '5px',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end', 
+    backgroundColor: '#000000',
     textAlign: 'center',
-    fontSize: 40,
     fontWeight: "bold",
-    marginEnd: 170,
-    height: 600,
-},
-  box:{
-    marginTop: 10,
-    top: -500,
-    borderWidth: 1,
-    backgroundColor: '#FFFF',
-    textAlign: 'center',
-    paddingHorizontal: 200,
-    paddingVertical: 45,
-    fontWeight: "bold",
-    borderRadius: 8,
-}, 
+    borderRadius: 3,
+    color: '#ffff'
+  }
 });
  
