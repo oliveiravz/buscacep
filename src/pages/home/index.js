@@ -37,18 +37,25 @@ export default function Home() {
             Alert.alert('Informe o CEP');
         }else{
             const {data} = await api.get(`/${searchCep}/json`);
-            saveData(data);
-            navigation.navigate('Detalhes', 
-                                 {'cep' : data.cep, 
-                                  'localidade': data.localidade, 
-                                  'bairro': data.bairro, 
-                                  'logradouro': data.logradouro,
-                                  'uf': data.uf,
-                                  'complemento': data.complemento, 
-                                  'ddd': data.ddd,
-                                  'ibge': data.ibge,
-                                  'siafi': data.siafi
-                                 });
+            
+            if(data.erro) {
+                Alert.alert('CEP não encontrado');
+            }else{
+                saveData(data);
+                navigation
+                    .navigate('Detalhes', 
+                            {'cep' : data.cep, 
+                            'localidade': data.localidade, 
+                            'bairro': data.bairro, 
+                            'logradouro': data.logradouro,
+                            'uf': data.uf,
+                            'complemento': data.complemento, 
+                            'ddd': data.ddd,
+                            'ibge': data.ibge,
+                            'siafi': data.siafi
+                            });
+            }
+            
         }
     }
 
@@ -69,10 +76,11 @@ export default function Home() {
                     onSubmitEditing={getCep}
                 />
             </View>
-            <View><TouchableOpacity onPress={getCep}>
-                    <Text style={styles.busca}>BUSCAR</Text>
-                </TouchableOpacity>
-                </View>
+            <View>
+              <TouchableOpacity onPress={getCep}>
+                  <Text style={styles.busca}>BUSCAR</Text>
+              </TouchableOpacity>
+            </View>
         </SafeAreaView>
     );
 }
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bolder",
     fontStyle: 'italic',
-},
+  },
   busca:{
     marginTop: 35,
     borderWidth: 1,

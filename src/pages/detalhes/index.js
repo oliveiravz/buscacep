@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,  SafeAreaView} from 'react-native';
 import firebase from '../../firebaseConnection';
-
 
 export default function Detalhes({route}) {
   const database = firebase.firestore();
@@ -29,9 +27,12 @@ export default function Detalhes({route}) {
     }
   };
   return (
-    <View style={styles.container}>
-        <Text>
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Text style={styles.title}>
             Detalhes sobre o CEP: {route.params?.cep}{'\n'}
+        </Text>
+        <Text>
             Rua: {route.params?.logradouro}{'\n'}
             Bairro: {route.params?.bairro}{'\n'}
             Complemento: {route.params?.complemento}{'\n'}
@@ -43,16 +44,24 @@ export default function Detalhes({route}) {
         <TouchableOpacity onPress={getFavoritos}>
           <Text style={styles.busca}>Favoritar</Text>
         </TouchableOpacity>
-        <StatusBar style="auto" />
-    </View>
+        </Text>
+      </View>
+    </SafeAreaView>
+    
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',
+    height: '100%'
   },
+  title: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: "900",
+    margin: 25
+  }
 });

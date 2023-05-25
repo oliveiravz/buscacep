@@ -14,11 +14,11 @@ const Tab   = createBottomTabNavigator();
 
 function Tabs() {
     return(
-        <Tab.Navigator tabBarOptions={{
-            tabStyle: { 
+        <Tab.Navigator screenOptions={{
+            tabBarStyle: { 
                 backgroundColor: '#1e212d',
             },
-            activeTintColor: '#fff',
+            tabBarActiveTintColor: '#fff',
             style: { borderTopWidth: 0 }
           }}
           >
@@ -36,7 +36,7 @@ function Tabs() {
             <Tab.Screen 
                 options={{
                             headerTransparent: true, 
-                            headerShown: false,
+                            headerShown: true,
                             tabBarIcon: ({ size, color}) => (
                                 <FontAwesome name='star' size={size} color={color} />
                             )
@@ -79,7 +79,7 @@ export default function App() {
                     component={Historico}
                  />
                  <Stack.Screen 
-                    options={{title:'', headerTransparent: true, headerShown: false}}
+                    options={{title:'', headerTransparent: true, headerShown: true}}
                     name='Detalhes' 
                     component={Detalhes}
                  />
