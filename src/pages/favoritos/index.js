@@ -1,27 +1,53 @@
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TextInput } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Card } from 'react-native-paper';
+
+import firebase from '../../firebaseConnection';
 
 export default function Favoritos() {
-  const [name, setName] = useState("")
+  const [favorite, setFavorite] = useState([]);
+  const database = firebase.firestore()
+  
+  useEffect(() => {
+    database.collection("favoritos").orderBy("data_hora", "desc").onSnapshot((query) => {
+      const list = []
+      query.forEach((doc) => {
+        list.push({...doc.data(), id: doc.id})
+      })
+      setFavorite(list)
+    })
+  }, [])
  
   return (
-    <SafeAreaView style={styles.container}>
-            <View>
-                 <Text style={styles.title}>FAVORITOS</Text>
-            </View>
-            <View style={styles.input}>
-                  <TextInput
-                  value={name}
-                  onChangeText={(texto) => SVGAnimateTransformElement(texto)}
-                  placeholder="Nome"
-                />
-
-            </View>
-            <View style={styles.box}>
-                    
-                </View>
-        </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.title_cabecalho}>
+        Favoritos
+      </Text>
+      
+      <FlatList
+        data={favorite}
+        renderItem={({ item }) => {
+          return(
+            <SafeAreaView>
+                <Card>
+                    <Text style={styles.title}>
+                        CEP: {item.cep}{'\n'}
+                        Rua: {item.logradouro}{'\n'}
+                        Bairro: {item.bairro}{'\n'}
+                        Complemento: {item.complemento}{'\n'}
+                        Estado: {item.uf}{'\n'}
+                        DDD: {item.ddd}{'\n'}
+                        Código IBGE: {item.ibge}{'\n'}
+                    </Text>
+                </Card>
+                <Text>{'\n'}</Text>
+            </SafeAreaView>
+          )
+        }}
+      />
+      <StatusBar style="auto" />
+    </View>
   );
 }
 
@@ -29,39 +55,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FF8C00',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: '5%',
+    // justifyContent: 'center'
   },
   title: {
-    marginTop: 10,
+    padding: '5%',
+    fontSize: '15px'
+  },
+  title_cabecalho: {
+    // alignItems: 'center',
+    padding: '5%',
+    // justifyContent: 'center',
+    fontWeight: 'bolder'
+  },
+  button:{
+    padding: '5px',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end', 
+    backgroundColor: '#000000',
     textAlign: 'center',
-    fontSize: 40,
     fontWeight: "bold",
-    marginEnd: 170,
-    height: 600,
-},
-  input:{
-    marginTop: 10,
-    top: -495,
-    right: 113,
-    borderWidth: 1,
-    backgroundColor: '#FF8C00',
-    paddingHorizontal: 60,
-    paddingVertical: 5,
-    borderRadius: 8,
-    fontSize: 25,
-    textAlign: 'left',
-},
-  box:{
-    marginTop: 10,
-    top: -500,
-    borderWidth: 1,
-    backgroundColor: '#FFFF',
-    textAlign: 'center',
-    paddingHorizontal: 200,
-    paddingVertical: 45,
-    fontWeight: "bold",
-    borderRadius: 8,
-}, 
+    borderRadius: 3,
+    color: '#ffff'
+  }
   
 });

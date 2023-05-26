@@ -36,7 +36,7 @@ function Tabs() {
             <Tab.Screen 
                 options={{
                             headerTransparent: true, 
-                            headerShown: true,
+                            headerShown: false,
                             tabBarIcon: ({ size, color}) => (
                                 <FontAwesome name='star' size={size} color={color} />
                             )

@@ -1,29 +1,30 @@
-import { StyleSheet, Text, View, TouchableOpacity,  SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,  SafeAreaView, Alert} from 'react-native';
 
 import firebase from '../../firebaseConnection';
 
 export default function Detalhes({route}) {
+
   const database = firebase.firestore();
+
   const getFavoritos = async () => {
-    const documentID = await database.collection('dados').orderBy('data_hora', 'desc').limit(1).get();
 
-    if(!documentID.empty) {
-      const lastId = documentID.docs[0];
+    try {
+      database.collection("favoritos").add({
+        cep: route.params.cep,
+        localidade: route.params.localidade,
+        bairro: route.params.bairro,
+        logradouro: route.params.logradouro,
+        uf: route.params.uf,
+        complemento: route.params.complemento,
+        ddd: route.params.ddd,
+        ibge: route.params.ibge,
+        siafi: route.params.siafi,
+        data_hora: firebase.firestore.FieldValue.serverTimestamp()
+      });  
 
-      var lastIdData = lastId.data();
-    }
-
-    if(!lastIdData.empty) {
-
-      try {
-
-        await database.collection('dados').doc(lastIdData.id).update({
-          favoritos: true
-        });
-
-      } catch (error) {
-        console.error('Erro ao realizar o update:', error);  
-      }
+      Alert.alert('Favoritado com sucesso');
+    } catch (error) {
+      console.log(error);
     }
   };
   
