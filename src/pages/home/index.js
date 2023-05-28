@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ToastAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MaskInput from 'react-native-mask-input';
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,81 +8,80 @@ import firebase from '../../firebaseConnection';
 import api from '../../services/api';
 
 export default function Home() {
-    const [searchCep, setSearchCep] = useState('');
-    const navigation = useNavigation();
-    const database = firebase.firestore();
-    const [count, setCount] = useState(0);
+  const [searchCep, setSearchCep] = useState('');
+  const navigation = useNavigation();
+  const database = firebase.firestore();
 
-    function saveData(data){
-        database.collection("dados").add({
-            id: count,
-            favoritos: false,
-            cep: data.cep,
-            localidade: data.localidade,
-            bairro: data.bairro,
-            logradouro: data.logradouro,
-            uf: data.uf,
-            complemento: data.complemento,
-            ddd: data.ddd,
-            ibge: data.ibge,
-            siafi: data.siafi,
-            data_hora: firebase.firestore.FieldValue.serverTimestamp()
-        });
+  function saveData(data) {
+    database.collection("dados").add({
+      cep: data.cep,
+      localidade: data.localidade,
+      bairro: data.bairro,
+      logradouro: data.logradouro,
+      uf: data.uf,
+      complemento: data.complemento,
+      ddd: data.ddd,
+      ibge: data.ibge,
+      siafi: data.siafi,
+      data_hora: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
 
-        setCount(count + 1);
-    }
+  const getCep = async () => {
     
-    const getCep = async () => {
-        if(searchCep.length == 0) {
-            Alert.alert('Informe o CEP');
-        }else{
-            const {data} = await api.get(`/${searchCep}/json`);
-            
-            if(data.erro) {
-                Alert.alert('CEP não encontrado');
-            }else{
-                saveData(data);
-                navigation
-                    .navigate('Detalhes', 
-                            {'cep' : data.cep, 
-                            'localidade': data.localidade, 
-                            'bairro': data.bairro, 
-                            'logradouro': data.logradouro,
-                            'uf': data.uf,
-                            'complemento': data.complemento, 
-                            'ddd': data.ddd,
-                            'ibge': data.ibge,
-                            'siafi': data.siafi
-                            });
-            }
-            
-        }
-    }
+    if (searchCep.length == 0 || searchCep.length < 8) {
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.title}>
-                <FontAwesome name='map-marker' size='275px' color='#000000' />
-                <Text style={styles.title}>BUSCACEP</Text>
-            </View>
-            <View>
-                <MaskInput
-                    mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/,'-',/\d/, /\d/, /\d/]}
-                    style={styles.input}
-                    placeholder='Digite seu CEP'
-                    keyboardType='numeric'
-                    value={searchCep}
-                    onChangeText={(masked, unmasked) => setSearchCep(unmasked)}
-                    onSubmitEditing={getCep}
-                />
-            </View>
-            <View>
-              <TouchableOpacity onPress={getCep}>
-                  <Text style={styles.busca}>BUSCAR</Text>
-              </TouchableOpacity>
-            </View>
-        </SafeAreaView>
-    );
+      ToastAndroid.show('Informe um CEP válido', ToastAndroid.SHORT);
+
+    }else {
+
+      const { data } = await api.get(`/${searchCep}/json`);
+
+      if (data.erro) {
+        ToastAndroid.show('CEP não encontrado', ToastAndroid.LONG);
+      } else {
+
+        saveData(data);
+
+        navigation
+          .navigate('Detalhes',
+            {
+              'cep': data.cep,
+              'localidade': data.localidade,
+              'bairro': data.bairro,
+              'logradouro': data.logradouro,
+              'uf': data.uf,
+              'complemento': data.complemento,
+              'ddd': data.ddd,
+              'ibge': data.ibge,
+              'siafi': data.siafi
+            });
+      }
+    }
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+        <FontAwesome name='map-marker' size={275} color='#000000' />
+        <Text style={styles.title}>BUSCACEP</Text>
+      <View>
+        <MaskInput
+          mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/]}
+          style={styles.input}
+          placeholder='Digite seu CEP'
+          keyboardType='numeric'
+          value={searchCep}
+          onChangeText={(masked, unmasked) => setSearchCep(unmasked)}
+          onSubmitEditing={getCep}
+        />
+      </View>
+      <View>
+        <TouchableOpacity onPress={getCep}>
+          <Text style={styles.busca}>BUSCAR</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -93,10 +92,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    marginTop: 25,
+    width: 300,
     backgroundColor: '#FFFF',
     padding: 15,
-    paddingVertical: 15,
     borderRadius: 8,
     fontSize: 20,
     margin: 10
@@ -104,11 +102,13 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: 40,
-    fontWeight: "bolder",
-    fontStyle: 'italic',
+    fontWeight: 900,
+    fontStyle: 'italic'
   },
-  busca:{
-    marginTop: 35,
+  titleIcon: {
+    textAlign: 'center',
+  },
+  busca: {
     borderWidth: 1,
     backgroundColor: '#000000',
     textAlign: 'center',
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     fontWeight: "bold",
     borderRadius: 8,
-    color: '#ffff'
+    color: '#ffff',
+    marginTop: 15
   },
 });
