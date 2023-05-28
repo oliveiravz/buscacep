@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ToastAndroid } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import firebase from '../../firebaseConnection';
@@ -9,29 +9,37 @@ export default function Detalhes({ route }) {
 
   const getFavoritos = async () => {
 
-    validate(route.params?.cep);
-    // try {
-    //   database.collection("favoritos").add({
-    //     cep: route.params.cep,
-    //     localidade: route.params.localidade,
-    //     bairro: route.params.bairro,
-    //     logradouro: route.params.logradouro,
-    //     uf: route.params.uf,
-    //     complemento: route.params.complemento,
-    //     ddd: route.params.ddd,
-    //     ibge: route.params.ibge,
-    //     siafi: route.params.siafi,
-    //     data_hora: firebase.firestore.FieldValue.serverTimestamp()
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-  };
+    const data = await database.collection("favoritos").where('cep', '==', route.params?.cep).get();
 
-  function validate(item) {
-    const collection = database.collection("favoritos").where('cep', '==', item).get();
+    let cepJaExistente = null;
 
-    console.log(collection);
+    if(!data.empty) {
+      data.forEach((doc) => {
+        cepJaExistente = doc.data().cep;
+      });
+    }
+
+    if(cepJaExistente) {
+      ToastAndroid.show('O CEP já está nos favoritos', ToastAndroid.SHORT);
+    } else {
+      try {
+        database.collection("favoritos").add({
+          cep: route.params.cep,
+          localidade: route.params.localidade,
+          bairro: route.params.bairro,
+          logradouro: route.params.logradouro,
+          uf: route.params.uf,
+          complemento: route.params.complemento,
+          ddd: route.params.ddd,
+          ibge: route.params.ibge,
+          siafi: route.params.siafi,
+          data_hora: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        ToastAndroid.show('CEP adicionado aos favoritos', ToastAndroid.SHORT);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -41,7 +49,7 @@ export default function Detalhes({ route }) {
           <Text style={styles.title}>
             Detalhes sobre o CEP: {route.params?.cep}{'\n'}
           </Text>
-          <Text>
+          <Text style={styles.detailsInfo}>
             Rua: {route.params?.logradouro}{'\n'}
             Bairro: {route.params?.bairro}{'\n'}
             Complemento: {route.params?.complemento}{'\n'}
@@ -53,7 +61,7 @@ export default function Detalhes({ route }) {
       </Card>
       <View>
         <TouchableOpacity onPress={getFavoritos}>
-          <Text style={styles.button}>Favoritar</Text>
+          <Text style={styles.button}>Adicionar os favoritos</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -89,5 +97,8 @@ const styles = StyleSheet.create({
   },
   details: {
     margin: 25
+  },
+  detailsInfo: {
+    fontSize: 20
   }
 });

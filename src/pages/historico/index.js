@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import firebase from '../../firebaseConnection';
-import { Spacer } from 'native-base';
-
 
 export default function Historico() {
   const [history, setHistory] = useState([])
   const database = firebase.firestore()
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     database.collection("dados").orderBy("data_hora", "desc").onSnapshot((query) => {
@@ -17,41 +16,69 @@ export default function Historico() {
       query.forEach((doc) => {
         list.push({ ...doc.data(), id: doc.id })
       })
-      setHistory(list)
+      setHistory(list);
+      setLoading(false);
     })
-  }, [])
+  }, []);
+
+  const limpaHistorio = async () => {
+    try {
+      const data = await database.collection('dados').get();
+  
+      const batch = database.batch();
+      data.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+  
+      await batch.commit();
+      ToastAndroid.show('Histórico excluido com sucesso', ToastAndroid.LONG);
+    } catch (error) {
+      console.error('Erro ao limpar histórico:', error);
+    }
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={{flexDirection: 'row'}}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
         <Text style={styles.titleCabecalho}>Histórico</Text>
-        <TouchableOpacity style={styles.limpar}>
-          <Text style={styles.limparText}>LIMPAR</Text>
-        </TouchableOpacity>
       </View>
-      <FlatList
-        data={history}
-        renderItem={({ item }) => {
-          return (
-            <SafeAreaView>
-              <Card>
-                <Text style={styles.title}>
-                  CEP: {item.cep}{'\n'}
-                  Rua: {item.logradouro}{'\n'}
-                  Bairro: {item.bairro}{'\n'}
-                  Complemento: {item.complemento}{'\n'}
-                  Estado: {item.uf}{'\n'}
-                  DDD: {item.ddd}{'\n'}
-                  Código IBGE: {item.ibge}{'\n'}
-                </Text>
-              </Card>
-              <Text>{'\n'}</Text>
-            </SafeAreaView>
-          )
-        }}
-      />
+      <TouchableOpacity style={styles.limpar} onPress={limpaHistorio}>
+        <Text style={styles.limparText}>LIMPAR TODO O HISTÓRICO</Text>
+      </TouchableOpacity>
+
+      {loading ? (
+        <ActivityIndicator style={styles.ActivityIndicator} size="large" color="#0000ff" />
+      ) : (
+        <React.Fragment>
+          {history.length === 0 ? (
+            <Text style={styles.emptyText}>Histórico Vazio.</Text>
+          ) : (
+            <FlatList
+              data={history}
+              renderItem={({ item }) => {
+                return (
+                  <View style={styles.spaceCard}>
+                    <Card>
+                      <Text style={styles.title}>
+                        CEP: {item.cep}{'\n'}
+                        Rua: {item.logradouro}{'\n'}
+                        Bairro: {item.bairro}{'\n'}
+                        Complemento: {item.complemento}{'\n'}
+                        Estado: {item.uf}{'\n'}
+                        DDD: {item.ddd}{'\n'}
+                        Código IBGE: {item.ibge}{'\n'}
+                      </Text>
+                    </Card>
+                  </View>
+                )
+              }}
+            /> 
+          )}
+        </React.Fragment>
+ 
+      )}
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -82,14 +109,32 @@ const styles = StyleSheet.create({
   },
   limpar: {
     borderRadius: 5,
-    backgroundColor: '#FF0000',
+    backgroundColor: '#000000',
     textAlign: 'center',
-    padding: 2,
+    padding: 5,
     marginBottom: 10
   },
   limparText: {
     color: '#ffff',
     fontWeight: 600,
-    margin: 5
+    margin: 5,
+    textAlign: 'center'
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 25
+  },
+  spaceCard: {
+    marginBottom: 15
+  },
+    ActivityIndicator: {
+    flex: 1
+  },
+  emptyText: {
+    flex: 1,
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
   }
 });

@@ -7,6 +7,7 @@ import firebase from '../../firebaseConnection';
 
 export default function Favoritos() {
   const [favorite, setFavorite] = useState([]);
+  const [loading, setLoading] = useState(true);
   const database = firebase.firestore()
 
   useEffect(() => {
@@ -15,31 +16,41 @@ export default function Favoritos() {
       query.forEach((doc) => {
         list.push({ ...doc.data(), id: doc.id })
       })
-      setFavorite(list)
+      setFavorite(list);
+      setLoading(false);
     })
   }, [])
 
-  const showConfirmationDialog = (useCallback) => {
+  const showConfirmationDialog = (onConfirm) => {
     Alert.alert(
       'Atenção',
       'Deseja excluir?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { text: 'OK', onPress: () => useCallback(true)},
+        { text: 'OK', onPress: () => onConfirm(true)},
       ],
       { cancelable: true }
     );
   };
 
-  function removeFavorite(cep) {
-    showConfirmationDialog((confirm) => {
+  const removeFavorite = async (cep) => {
+    showConfirmationDialog(async (confirm) => {
       if (confirm) {
-        const cepId = cep;
-        database.collection('favoritos').doc(cepId).delete()
-          .then(() => {
-            ToastAndroid.show('Excluído', ToastAndroid.SHORT);
+
+        const cepId = await database.collection('favoritos').where('cep', '==', cep).get();
+       
+        if(!cepId.empty) {
+          cepId.forEach((doc) => {
+            doc.ref.delete()
+              .then(() => {
+                ToastAndroid.show('Excluído', ToastAndroid.SHORT);
+              })
+              .catch((error) => {
+                console.error('Erro ao excluir o documento:', error);
+              });
           });
-      } else {
+        }
+      }else{
         ToastAndroid.show('Falha ao excluir', ToastAndroid.SHORT);
       }
     });
@@ -50,31 +61,41 @@ export default function Favoritos() {
       <Text style={styles.titleCabecalho}>
         Favoritos
       </Text>
-      <FlatList
-        data={favorite}
-        renderItem={({ item }) => {
-          return (
-            <SafeAreaView>
-              <Card>
-                <Text style={styles.title}>
-                  CEP: {item.cep}{'\n'}
-                  Rua: {item.logradouro}{'\n'}
-                  Bairro: {item.bairro}{'\n'}
-                  Complemento: {item.complemento}{'\n'}
-                  Estado: {item.uf}{'\n'}
-                  DDD: {item.ddd}{'\n'}
-                  Código IBGE: {item.ibge}{'\n'}
-                </Text>
-              </Card>
-              <View style={styles.removeButton} >
-                <TouchableOpacity onPress={() => removeFavorite(item.cep)}>
-                  <Text style={styles.removerButtonText}>REMOVER</Text>
-                </TouchableOpacity>
-              </View>
-            </SafeAreaView>
-          )
-        }}
-      />
+      {loading ? (
+        <ActivityIndicator style={styles.ActivityIndicator} size="large" color="#000000" />
+      ) : ( 
+        <React.Fragment>
+          {favorite.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhum favorito encontrado.</Text>
+          ) : (
+            <FlatList
+              data={favorite}
+              renderItem={({ item }) => {
+                return (
+                  <SafeAreaView>
+                    <Card>
+                      <Text style={styles.title}>
+                        CEP: {item.cep}{'\n'}
+                        Rua: {item.logradouro}{'\n'}
+                        Bairro: {item.bairro}{'\n'}
+                        Complemento: {item.complemento}{'\n'}
+                        Estado: {item.uf}{'\n'}
+                        DDD: {item.ddd}{'\n'}
+                        Código IBGE: {item.ibge}{'\n'}
+                      </Text>
+                    </Card>
+                    <View style={styles.removeButton} >
+                      <TouchableOpacity onPress={() => removeFavorite(item.cep)}>
+                        <Text style={styles.removerButtonText}>REMOVER</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </SafeAreaView>
+                )
+              }}
+            />
+            )}
+          </React.Fragment>
+      )}
       <StatusBar style="auto" />
     </View>
   );
@@ -93,7 +114,8 @@ const styles = StyleSheet.create({
   titleCabecalho: {
     padding: 5,
     fontSize: 25,
-    fontWeight: 900
+    fontWeight: 900,
+    marginTop: 25
   },
   removeButton: {
     marginTop: 5,
@@ -106,5 +128,15 @@ const styles = StyleSheet.create({
     color: '#ffff',
     textAlign: 'center',
     fontWeight: 900
+  },
+  ActivityIndicator: {
+    flex: 1
+  },
+  emptyText: {
+    flex: 1,
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
   }
+  
 });
