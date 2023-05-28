@@ -1,4 +1,4 @@
-import saveData from 'Users/Pedro/OneDrive/Documentos/Trabalhos da faculdade/Mobile Systems/BuscaCep/buscacep/src/pages/home/';
+import saveData from '/Users/Pedro/OneDrive/Documentos/Trabalhos da faculdade/Mobile Systems/BuscaCep/buscacep/src/pages/home/index';
 
 describe("saveData", ()=>{
 
