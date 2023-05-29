@@ -13,26 +13,18 @@ export default function Home() {
   const database = firebase.firestore();
 
   function saveData(data) {
-    try{
-      database.collection("dados").add({
-        cep: data.cep,
-        localidade: data.localidade,
-        bairro: data.bairro,
-        logradouro: data.logradouro,
-        uf: data.uf,
-        complemento: data.complemento,
-        ddd: data.ddd,
-        ibge: data.ibge,
-        siafi: data.siafi,
-        data_hora: firebase.firestore.FieldValue.serverTimestamp()
-    
-      });
-      console.log("Sucesso")
-    }
-    catch(erro){
-      console.log(erro)
-    }
-
+    database.collection("dados").add({
+      cep: data.cep,
+      localidade: data.localidade,
+      bairro: data.bairro,
+      logradouro: data.logradouro,
+      uf: data.uf,
+      complemento: data.complemento,
+      ddd: data.ddd,
+      ibge: data.ibge,
+      siafi: data.siafi,
+      data_hora: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
 
   const getCep = async () => {
