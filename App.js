@@ -4,10 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@expo/vector-icons';
 
-import Home from '../buscacep/src/pages/home/';
-import Favoritos from '../buscacep/src/pages/favoritos/';
-import Historico from '../buscacep/src/pages/historico/';
-import Detalhes from '../buscacep/src/pages/detalhes/';
+import Home from '../buscacep/src/pages/home/Home';
+import Favoritos from '../buscacep/src/pages/favoritos/Favoritos';
+import Historico from '../buscacep/src/pages/historico/Historico';
+import Detalhes from '../buscacep/src/pages/detalhes/Detalhes';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
